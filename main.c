@@ -9,7 +9,7 @@
  */
 int main(int argc, char *argv[])
 {
-	char *prompt = "($) ";
+	char *prompt = "$ ";
 	char *lineptr;
 	size_t n = 0;
 	ssize_t nchars_read;
@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
 	while (1)
 	{
-		printf("%s", prompt);
+		write(STDOUT_FILENO, prompt, 2);
 		nchars_read = getline(&lineptr, &n, stdin);
 
 		if (nchars_read == -1)
@@ -28,7 +28,13 @@ int main(int argc, char *argv[])
 			return (-1);
 		}
 
-		printf("%s\n", lineptr);
+		if (argv)
+		{
+			if (execve(lineptr, argv, NULL) == -1)
+			{
+				perror("Error:");
+			}
+		}
 	}
 
 	free(lineptr);
